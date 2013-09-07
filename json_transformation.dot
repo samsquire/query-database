@@ -1,0 +1,50 @@
+digraph transformation {
+  sortv=1
+  graph[label="automated json transformation for query optimization", rankdir=LR];
+  
+
+  list[shape="record", label = "object | object | object"];
+  list -> object;
+  object -> {name; age; location; shares;}
+  location -> {lat; lon;}
+
+  shares[shape="record", label = "share | share | share"];
+  shares -> {fileshare; othershare;};
+
+  othershare_type [label="type"];
+  othershare -> othershare_type;
+
+  subgraph cluster_from {
+    label="what needs pulling up";
+    style=dotted;
+    fileshare [label="file"];
+    fileshare -> { key; path;} 
+    fileshare -> type [label="where type == file"];
+  }
+}
+
+digraph transformed {
+  sortv=2
+  graph[label="after transformation", rankdir=LR];
+  list2[shape="record", label = "object | object | object"];
+
+  object2[label="object"]
+  list2 -> object2;
+  object2 -> {name2[label="name"]; age2[label="age"]; location2; shares2; fileshares}
+  location2 [label="location"];
+  location2 -> {lat2 [label="lat"]; lon2 [label="lon"];}
+
+  shares2 [shape="record", label = "share | share | share"];
+
+  othershare_type2 [label="type"];
+  othershare2[label="othershare"];
+  othershare2 -> othershare_type2;
+  shares2 -> othershare2;
+
+  subgraph cluster_pulled {
+    label = "file elements pulled upwards";
+    style=dotted;
+    fileshares [shape="record", label = "fileshare | fileshare | fileshare"];
+    fileshares -> {type2 [label="type"]; key2 [label="key"]; path2 [label="path"];};
+  }
+}
